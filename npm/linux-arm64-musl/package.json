@@ -1,6 +1,6 @@
 {
   "name": "tiktoken-rs-node-linux-arm64-musl",
-  "version": "0.0.0",
+  "repository": "github:tmb/tiktoken-rs-node",
   "os": [
     "linux"
   ],

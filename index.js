@@ -59,6 +59,54 @@ switch (platform) {
         throw new Error(`Unsupported architecture on Android ${arch}`)
     }
     break
+  case 'win32':
+    switch (arch) {
+      case 'x64':
+        localFileExisted = existsSync(
+          join(__dirname, 'tiktoken-rs-node.win32-x64-msvc.node')
+        )
+        try {
+          if (localFileExisted) {
+            nativeBinding = require('./tiktoken-rs-node.win32-x64-msvc.node')
+          } else {
+            nativeBinding = require('tiktoken-rs-node-win32-x64-msvc')
+          }
+        } catch (e) {
+          loadError = e
+        }
+        break
+      case 'ia32':
+        localFileExisted = existsSync(
+          join(__dirname, 'tiktoken-rs-node.win32-ia32-msvc.node')
+        )
+        try {
+          if (localFileExisted) {
+            nativeBinding = require('./tiktoken-rs-node.win32-ia32-msvc.node')
+          } else {
+            nativeBinding = require('tiktoken-rs-node-win32-ia32-msvc')
+          }
+        } catch (e) {
+          loadError = e
+        }
+        break
+      case 'arm64':
+        localFileExisted = existsSync(
+          join(__dirname, 'tiktoken-rs-node.win32-arm64-msvc.node')
+        )
+        try {
+          if (localFileExisted) {
+            nativeBinding = require('./tiktoken-rs-node.win32-arm64-msvc.node')
+          } else {
+            nativeBinding = require('tiktoken-rs-node-win32-arm64-msvc')
+          }
+        } catch (e) {
+          loadError = e
+        }
+        break
+      default:
+        throw new Error(`Unsupported architecture on Windows: ${arch}`)
+    }
+    break
   case 'darwin':
     localFileExisted = existsSync(join(__dirname, 'tiktoken-rs-node.darwin-universal.node'))
     try {

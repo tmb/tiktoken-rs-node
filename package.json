@@ -1,9 +1,10 @@
 {
   "name": "tiktoken-rs-node",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "types": "index.d.ts",
   "type": "module",
+  "repository": "github:tmb/tiktoken-rs-node",
   "napi": {
     "name": "tiktoken-rs-node",
     "triples": {
@@ -45,5 +46,14 @@
     "benchmark": "ts-node __tests__/benchmark.ts",
     "benchmark:comprehensive": "ts-node __tests__/comprehensive-benchmark.ts",
     "test:all": "yarn test && yarn benchmark"
+  },
+  "optionalDependencies": {
+    "tiktoken-rs-node-darwin-x64": "1.0.0",
+    "tiktoken-rs-node-linux-x64-gnu": "1.0.0",
+    "tiktoken-rs-node-darwin-arm64": "1.0.0",
+    "tiktoken-rs-node-linux-arm64-gnu": "1.0.0",
+    "tiktoken-rs-node-linux-arm64-musl": "1.0.0",
+    "tiktoken-rs-node-linux-arm-gnueabihf": "1.0.0",
+    "tiktoken-rs-node-linux-arm-musleabihf": "1.0.0"
   }
 }
