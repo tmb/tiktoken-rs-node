@@ -1,7 +1,4 @@
-import { createDefaultEsmPreset, type JestConfigWithTsJest } from "ts-jest";
-
-const preset = createDefaultEsmPreset();
-const config: JestConfigWithTsJest = {
+module.exports = {
   testEnvironment: "node",
   testMatch: ["**/__tests__/**/*.test.ts"],
   verbose: true,
@@ -9,7 +6,8 @@ const config: JestConfigWithTsJest = {
   collectCoverageFrom: ["index.js"],
   coverageDirectory: "./coverage",
   coverageReporters: ["text", "lcov"],
-  ...preset,
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
+  transformIgnorePatterns: ['node_modules'],
 };
-
-export default config;

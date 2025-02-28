@@ -39,7 +39,7 @@
     "prepublishOnly": "napi prepublish -t npm",
     "universal": "napi universal",
     "version": "napi version",
-    "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
+    "test": "jest",
     "benchmark": "ts-node __tests__/benchmark.ts",
     "benchmark:comprehensive": "ts-node __tests__/comprehensive-benchmark.ts",
     "test:all": "yarn test && yarn benchmark"
