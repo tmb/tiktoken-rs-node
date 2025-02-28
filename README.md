@@ -33,8 +33,6 @@ const decodedString = encoding.decode(tokens);
 
 ## Testing and Benchmarking
 
-This package includes Jest tests and Mitata benchmarks.
-
 ### Running Tests
 
 ```bash
