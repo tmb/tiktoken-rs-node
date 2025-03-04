@@ -1,5 +1,5 @@
 import { getEncoding, encodingForModel } from "../index.js";
-import { bench, run } from "mitata";
+import * as mitata from "mitata";
 
 // Sample texts of different sizes
 const smallText = Buffer.from("Hello, world!");
@@ -12,27 +12,27 @@ const p50k = getEncoding("p50k_base");
 const gpt2 = getEncoding("gpt2");
 
 // Benchmark encoding with different models and text sizes
-bench("cl100k_base - encode small text", () => {
+mitata.bench("cl100k_base - encode small text", () => {
   cl100k.encode(smallText);
 });
 
-bench("cl100k_base - encode medium text", () => {
+mitata.bench("cl100k_base - encode medium text", () => {
   cl100k.encode(mediumText);
 });
 
-bench("cl100k_base - encode large text", () => {
+mitata.bench("cl100k_base - encode large text", () => {
   cl100k.encode(largeText);
 });
 
-bench("p50k_base - encode small text", () => {
+mitata.bench("p50k_base - encode small text", () => {
   p50k.encode(smallText);
 });
 
-bench("p50k_base - encode medium text", () => {
+mitata.bench("p50k_base - encode medium text", () => {
   p50k.encode(mediumText);
 });
 
-bench("gpt2 - encode small text", () => {
+mitata.bench("gpt2 - encode small text", () => {
   gpt2.encode(smallText);
 });
 
@@ -41,28 +41,28 @@ const smallTokens = cl100k.encode(smallText);
 const mediumTokens = cl100k.encode(mediumText);
 const largeTokens = cl100k.encode(largeText);
 
-bench("cl100k_base - decode small tokens", () => {
+mitata.bench("cl100k_base - decode small tokens", () => {
   cl100k.decode(smallTokens);
 });
 
-bench("cl100k_base - decode medium tokens", () => {
+mitata.bench("cl100k_base - decode medium tokens", () => {
   cl100k.decode(mediumTokens);
 });
 
-bench("cl100k_base - decode large tokens", () => {
+mitata.bench("cl100k_base - decode large tokens", () => {
   cl100k.decode(largeTokens);
 });
 
 // Benchmark encodingForModel
-bench("encodingForModel - gpt-4", () => {
+mitata.bench("encodingForModel - gpt-4", () => {
   encodingForModel("gpt-4");
 });
 
-bench("encodingForModel - gpt-3.5-turbo", () => {
+mitata.bench("encodingForModel - gpt-3.5-turbo", () => {
   encodingForModel("gpt-3.5-turbo");
 });
 
 // Run all benchmarks
-run({
+mitata.run({
   colors: true,
 });

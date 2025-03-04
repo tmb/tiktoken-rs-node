@@ -1,5 +1,5 @@
 import { Encoding, getEncoding, encodingForModel } from "../index.js";
-import { bench, run } from "mitata";
+import * as mitata from "mitata";
 
 // All supported encodings
 const ENCODINGS = [
@@ -41,7 +41,7 @@ const encodings = ENCODINGS.reduce((acc, name) => {
 // Benchmark encoding for each encoding and text
 Object.entries(encodings).forEach(([name, encoding]) => {
   Object.entries(TEXTS).forEach(([textType, text]) => {
-    bench(`${name} - encode ${textType} text`, () => {
+    mitata.bench(`${name} - encode ${textType} text`, () => {
       encoding.encode(text);
     });
   });
@@ -51,7 +51,7 @@ Object.entries(encodings).forEach(([name, encoding]) => {
 Object.entries(encodings).forEach(([name, encoding]) => {
   Object.entries(TEXTS).forEach(([textType, text]) => {
     const tokens = encoding.encode(text);
-    bench(`${name} - decode ${textType} tokens`, () => {
+    mitata.bench(`${name} - decode ${textType} tokens`, () => {
       encoding.decode(tokens);
     });
   });
@@ -59,12 +59,12 @@ Object.entries(encodings).forEach(([name, encoding]) => {
 
 // Benchmark encodingForModel
 MODELS.forEach((model) => {
-  bench(`encodingForModel - ${model}`, () => {
+  mitata.bench(`encodingForModel - ${model}`, () => {
     encodingForModel(model);
   });
 });
 
 // Run all benchmarks
-run({
+mitata.run({
   colors: true,
 });
