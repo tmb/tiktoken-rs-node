@@ -1,4 +1,4 @@
-import { Encoding, getEncoding } from "../index";
+import { Encoding, getEncoding } from "../index.js";
 
 const SUPPORTED_ENCODINGS = [
   "gpt2",

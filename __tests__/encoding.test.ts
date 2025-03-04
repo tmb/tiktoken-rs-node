@@ -1,4 +1,4 @@
-import { getEncoding, encodingForModel } from "../index";
+import { getEncoding, encodingForModel } from "../index.js";
 
 describe("tiktoken-rs-node", () => {
   describe("getEncoding", () => {

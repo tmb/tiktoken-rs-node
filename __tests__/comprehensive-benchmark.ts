@@ -1,4 +1,4 @@
-import { Encoding, getEncoding, encodingForModel } from "..";
+import { Encoding, getEncoding, encodingForModel } from "../index.js";
 import { bench, run } from "mitata";
 
 // All supported encodings

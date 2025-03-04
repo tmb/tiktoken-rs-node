@@ -1,6 +1,6 @@
 {
   "name": "tiktoken-rs-node",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "types": "index.d.ts",
   "type": "module",
@@ -37,12 +37,12 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "build": "napi build --platform --release",
-    "build:debug": "napi build --platform",
+    "build": "napi build --platform --release --js binding.cjs",
+    "build:debug": "napi build --platform --js binding.cjs",
     "prepublishOnly": "napi prepublish -t npm",
     "universal": "napi universal",
     "version": "napi version",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "benchmark": "ts-node __tests__/benchmark.ts",
     "benchmark:comprehensive": "ts-node __tests__/comprehensive-benchmark.ts",
     "test:all": "yarn test && yarn benchmark"
