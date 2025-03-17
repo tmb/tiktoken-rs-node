@@ -1,6 +1,6 @@
 use napi::{
   bindgen_prelude::{Error, Uint32Array, Uint8Array},
-  Env, JsString,
+  Env, JsString, Status,
 };
 use napi_derive::napi;
 
@@ -26,10 +26,16 @@ impl Encoding {
   }
 
   #[napi]
-  pub fn decode(&self, env: Env, tokens: Uint32Array) -> JsString {
-    let decoded_str = self.encoding.decode(tokens.as_ref().to_vec()).unwrap();
+  pub fn decode(&self, env: Env, tokens: Uint32Array) -> Result<JsString, Error> {
+    let decoded_str = self.encoding.decode(tokens.as_ref().to_vec());
 
-    env.create_string_from_std(decoded_str).unwrap()
+    match decoded_str {
+      Ok(decoded_str) => Ok(env.create_string_from_std(decoded_str).unwrap()),
+      Err(err) => Err(Error::new(
+        Status::GenericFailure,
+        format!("Error while decoding tokens to UTF-8. {}", err),
+      )),
+    }
   }
 }
 
