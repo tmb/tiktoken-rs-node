@@ -67,5 +67,16 @@ describe("tiktoken-rs-node", () => {
       const decoded = encoding.decode(tokens);
       expect(decoded).toBe(text);
     });
+
+    test("should throw error for invalid UTF-8 input", () => {
+      const encoding = getEncoding("cl100k_base");
+      // Create a buffer with an incomplete UTF-8 sequence (first byte of a 2-byte sequence)
+      const invalidBytes = Buffer.from([0xc2]); // First byte of UTF-8 2-byte sequence
+
+      // The encoding should throw an error for invalid UTF-8
+      expect(() => encoding.encode(invalidBytes)).toThrow(
+        "Error while encoding text to UTF-8"
+      );
+    });
   });
 });

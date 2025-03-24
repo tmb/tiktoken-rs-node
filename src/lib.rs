@@ -12,16 +12,22 @@ pub struct Encoding {
 #[napi]
 impl Encoding {
   #[napi]
-  pub fn encode(&self, text: Uint8Array) -> Uint32Array {
-    let text_from_utf8 = std::str::from_utf8(text.as_ref()).unwrap();
-    let mut tokens = self.encoding.encode_with_special_tokens(text_from_utf8);
+  pub fn encode(&self, text: Uint8Array) -> Result<Uint32Array, Error> {
+    let text = std::str::from_utf8(text.as_ref()).map_err(|err| {
+      Error::new(
+        Status::GenericFailure,
+        format!("Error while encoding text to UTF-8. {}", err),
+      )
+    })?;
+
+    let mut tokens = self.encoding.encode_with_special_tokens(text);
 
     unsafe {
-      return Uint32Array::with_external_data(
+      Ok(Uint32Array::with_external_data(
         tokens.as_mut_ptr(),
         tokens.len(),
         move |_ptr, _len| drop(tokens),
-      );
+      ))
     }
   }
 
@@ -30,7 +36,10 @@ impl Encoding {
     let decoded_str = self.encoding.decode(tokens.as_ref().to_vec());
 
     match decoded_str {
-      Ok(decoded_str) => Ok(env.create_string_from_std(decoded_str).unwrap()),
+      Ok(decoded_str) => match env.create_string_from_std(decoded_str) {
+        Ok(a) => Ok(a),
+        Err(err) => Err(Error::new(Status::GenericFailure, err.to_string())),
+      },
       Err(err) => Err(Error::new(
         Status::GenericFailure,
         format!("Error while decoding tokens to UTF-8. {}", err),
@@ -46,27 +55,23 @@ pub fn get_encoding(
   )]
   encoding: String,
 ) -> Result<Encoding, Error> {
-  let encoding: Result<tiktoken_rs::CoreBPE, Error> = match encoding.as_str() {
-    "gpt2" => Ok(tiktoken_rs::r50k_base().unwrap()),
-    "r50k_base" => Ok(tiktoken_rs::r50k_base().unwrap()),
-    "p50k_base" => Ok(tiktoken_rs::p50k_base().unwrap()),
-    "p50k_edit" => Ok(tiktoken_rs::p50k_edit().unwrap()),
-    "cl100k_base" => Ok(tiktoken_rs::cl100k_base().unwrap()),
-    "o200k_base" => Ok(tiktoken_rs::o200k_base().unwrap()),
-    _ => Err(Error::from_reason("Invalid encoding")),
+  let encoding = match encoding.as_str() {
+    "gpt2" | "r50k_base" => tiktoken_rs::r50k_base(),
+    "p50k_base" => tiktoken_rs::p50k_base(),
+    "p50k_edit" => tiktoken_rs::p50k_edit(),
+    "cl100k_base" => tiktoken_rs::cl100k_base(),
+    "o200k_base" => tiktoken_rs::o200k_base(),
+    _ => return Err(Error::from_reason("Invalid encoding")),
   };
 
-  match encoding {
-    Ok(encoding) => Ok(Encoding { encoding }),
-    Err(err) => Err(err),
-  }
+  encoding
+    .map(|encoding| Encoding { encoding })
+    .map_err(|err| Error::from_reason(err.to_string()))
 }
 
 #[napi]
 pub fn encoding_for_model(model_name: String) -> Result<Encoding, Error> {
-  let encoding = tiktoken_rs::get_bpe_from_model(&model_name);
-  match encoding {
-    Ok(encoding) => Ok(Encoding { encoding }),
-    Err(err) => Err(Error::from_reason(err.to_string())),
-  }
+  tiktoken_rs::get_bpe_from_model(&model_name)
+    .map(|encoding| Encoding { encoding })
+    .map_err(|err| Error::from_reason(err.to_string()))
 }
