@@ -1,5 +1,5 @@
 use napi::{
-  bindgen_prelude::{Error, Uint32Array, Uint8Array},
+  bindgen_prelude::{Error, Uint32Array},
   Env, JsString, Status,
 };
 use napi_derive::napi;
@@ -12,34 +12,17 @@ pub struct Encoding {
 #[napi]
 impl Encoding {
   #[napi]
-  pub fn encode(&self, text: Uint8Array) -> Result<Uint32Array, Error> {
-    let text = std::str::from_utf8(text.as_ref()).map_err(|err| {
-      Error::new(
-        Status::GenericFailure,
-        format!("Error while encoding text to UTF-8. {}", err),
-      )
-    })?;
-
-    let mut tokens = self.encoding.encode_with_special_tokens(text);
-
-    unsafe {
-      Ok(Uint32Array::with_external_data(
-        tokens.as_mut_ptr(),
-        tokens.len(),
-        move |_ptr, _len| drop(tokens),
-      ))
-    }
+  pub fn encode(&self, text: JsString) -> Result<Uint32Array, Error> {
+    let text = text.into_utf8()?;
+    let text = text.as_str()?;
+    let tokens = self.encoding.encode_with_special_tokens(text);
+    Ok(Uint32Array::new(tokens))
   }
 
   #[napi]
   pub fn decode(&self, env: Env, tokens: Uint32Array) -> Result<JsString, Error> {
-    let decoded_str = self.encoding.decode(tokens.as_ref().to_vec());
-
-    match decoded_str {
-      Ok(decoded_str) => match env.create_string_from_std(decoded_str) {
-        Ok(a) => Ok(a),
-        Err(err) => Err(Error::new(Status::GenericFailure, err.to_string())),
-      },
+    match self.encoding.decode(tokens.as_ref().to_vec()) {
+      Ok(decoded_str) => env.create_string_from_std(decoded_str),
       Err(err) => Err(Error::new(
         Status::GenericFailure,
         format!("Error while decoding tokens to UTF-8. {}", err),
