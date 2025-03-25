@@ -2,9 +2,9 @@ import { getEncoding, encodingForModel } from "../index.js";
 import * as mitata from "mitata";
 
 // Sample texts of different sizes
-const smallText = Buffer.from("Hello, world!");
-const mediumText = Buffer.from("A".repeat(1000));
-const largeText = Buffer.from("B".repeat(10000));
+const smallText = ("Hello, world!");
+const mediumText = ("A".repeat(1000));
+const largeText = ("B".repeat(10000));
 
 // Get different encodings
 const cl100k = getEncoding("cl100k_base");

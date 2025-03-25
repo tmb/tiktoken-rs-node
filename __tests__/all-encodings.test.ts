@@ -36,7 +36,7 @@ describe("All Encodings", () => {
         test(`should encode and decode "${testString.substring(0, 20)}${
           testString.length > 20 ? "..." : ""
         }" correctly`, () => {
-          const textBytes = Buffer.from(testString);
+          const textBytes = testString;
           const tokens = encoding.encode(textBytes);
           expect(
             ArrayBuffer.isView(tokens) && tokens.BYTES_PER_ELEMENT === 4
