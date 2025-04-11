@@ -1,3 +1,5 @@
+use std::{borrow::Cow, panic::catch_unwind};
+
 use napi::{
   bindgen_prelude::{Error, Uint32Array},
   Env, JsString, Status,
@@ -21,13 +23,22 @@ impl Encoding {
 
   #[napi]
   pub fn decode(&self, env: Env, tokens: Uint32Array) -> Result<JsString, Error> {
-    match self.encoding.decode(tokens.as_ref().to_vec()) {
-      Ok(decoded_str) => env.create_string_from_std(decoded_str),
-      Err(err) => Err(Error::new(
-        Status::GenericFailure,
-        format!("Error while decoding tokens to UTF-8. {}", err),
-      )),
+    let mut bytes = Vec::<u8>::new();
+    for chunk in self.encoding._decode_native_and_split(tokens.to_vec()) {
+      bytes.extend_from_slice(&chunk);
     }
+
+    let str = if let Cow::Owned(string) = String::from_utf8_lossy(&bytes) {
+      string
+    } else {
+      // SAFETY: `String::from_utf8_lossy`'s contract ensures that if
+      // it returns a `Cow::Borrowed`, it is a valid UTF-8 string.
+      // Otherwise, it returns a new allocation of an owned `String`, with
+      // replacement characters for invalid sequences, which is returned
+      // above.
+      unsafe { String::from_utf8_unchecked(bytes) }
+    };
+    env.create_string_from_std(str)
   }
 }
 
